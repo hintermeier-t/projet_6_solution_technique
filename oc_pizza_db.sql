@@ -41,7 +41,7 @@ CREATE TABLE customers (
 
 CREATE TABLE employees (
     id INTEGER,
-    fk_workplace_id INTEGER,
+    fk_workplace_id INTEGER,git add OBJECT
     occupation VARCHAR(30),
     PRIMARY KEY (id),
     FOREIGN KEY (id) REFERENCES users (id),
@@ -63,10 +63,82 @@ CREATE TABLE pizzas (
     vegan BOOLEAN
 );
 
+CREATE TABLE compositions (
+    pizza_id INTEGER UNSIGNED PRIMARY KEY,
+    ingredient_id INTEGER UNSIGNED PRIMARY KEY,
+    quantity INTEGER,
+    FOREIGN KEY (pizza_id) REFERENCES pizzas (id),
+    FOREIGN KEY (ingredient_id) REFERENCES ingredients (id)
+);
+
 CREATE TABLE drinkings (
     id INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     label VARCHAR(50),
     raw_price DECIMAL,
     net_price DECIMAL,
     alcooholic BOOLEAN
+);
+
+CREATE TABLE ingredientStocks (
+    shop_id INTEGER UNSIGNED PRIMARY KEY,
+    ingredient_id INTEGER UNSIGNED PRIMARY KEY,
+    quantity INTEGER,
+    FOREIGN KEY (shop_id) REFERENCES shops (id),
+    FOREIGN KEY (ingredient_id) REFERENCES ingredients (id)
+);
+
+CREATE TABLE drinkingsStocks (
+    shop_id INTEGER UNSIGNED PRIMARY KEY,
+    drinkings_id INTEGER UNSIGNED PRIMARY KEY,
+    quantity INTEGER,
+    FOREIGN KEY (shop_id) REFERENCES shops (id),
+    FOREIGN KEY (drinkings_id) REFERENCES drinkings (id)
+);
+
+CREATE TABLE drinkingLines (
+    cmd_id INTEGER UNSIGNED PRIMARY KEY,
+    item_id INTEGER UNSIGNED PRIMARY KEY,
+    quantity TINYINT UNSIGNED,
+    total_price DECIMAL,
+    FOREIGN KEY (cmd_id) REFERENCES commands (id),
+    FOREIGN KEY (item_id) REFERENCES drinkings (id)
+);
+
+CREATE TABLE pizzaLines (
+    cmd_id INTEGER UNSIGNED PRIMARY KEY,
+    item_id INTEGER UNSIGNED PRIMARY KEY,
+    quantity TINYINT UNSIGNED,
+    total_price DECIMAL,
+    FOREIGN KEY (cmd_id) REFERENCES commands (id),
+    FOREIGN KEY (item_id) REFERENCES pizzas (id)
+);
+
+CREATE TABLE commands (
+    id INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    client_id INTEGER UNSIGNED,
+    raw_price DECIMAL,
+    net_price DECIMAL,
+    date_cmd DATETIME
+    FOREIGN KEY (client_id) REFERENCES customers (id)
+);
+
+CREATE TABLE bills (
+    id INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    order_id INTEGER NOT NULL,
+    payment_method ENUM,
+    FOREIGN KEY (order_id) REFERENCES commands (id)
+)
+
+CREATE TABLE expeditions (
+    id INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    client_id INTEGER UNSIGNED,
+    bill_id INTEGER UNSIGNED,
+    deliverer_id INTEGER UNSIGNED,
+    paid_status BOOLEAN,
+    order_date DATETIME,
+    delivery_date DATETIME,
+    delivery_mehod ENUM,
+    FOREIGN KEY (client_id) REFERENCES customers (id),
+    FOREIGN KEY (bill_id) REFERENCES bills (id),
+    FOREIGN KEY (deliverer_id) REFERENCES employees (id)
 );
