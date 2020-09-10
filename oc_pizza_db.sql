@@ -9,15 +9,15 @@ CREATE TABLE addresses (
     street_number VARCHAR(4) NOT NULL,
     complement VARCHAR(60) NOT NULL,
     phone_number VARCHAR(10)
-);
+)ENGINE = InnoDB;
 
 CREATE TABLE shops(
     id INTEGER UNSIGNED AUTO_INCREMENT,
-    fk_address_id INTEGER,
+    fk_address_id INTEGER UNSIGNED,
     contact_mail VARCHAR(100),
     PRIMARY KEY (id),
     FOREIGN KEY (fk_address_id) REFERENCES addresses(id)
-);
+)ENGINE = InnoDB;
 
 CREATE TABLE users (
     id INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
@@ -27,29 +27,29 @@ CREATE TABLE users (
     email VARCHAR(100) NOT NULL,
     password_hash BINARY(64) NOT NULL,
     FOREIGN KEY (fk_address_id) REFERENCES addresses(id)
-);
+)ENGINE = InnoDB;
 
 CREATE TABLE customers (
     id INTEGER UNSIGNED PRIMARY KEY,
-    fk_favorite_shop_id INTEGER,
+    fk_favorite_shop_id INTEGER UNSIGNED,
     FOREIGN KEY (id) REFERENCES users(id),
     FOREIGN KEY (fk_favorite_shop_id) REFERENCES shops (id)
-);
+)ENGINE = InnoDB;
 
 CREATE TABLE employees (
     id INTEGER UNSIGNED PRIMARY KEY,
-    fk_workplace_id INTEGER,git add OBJECT
+    fk_workplace_id INTEGER UNSIGNED,
     occupation VARCHAR(30),
     FOREIGN KEY (id) REFERENCES users(id),
     FOREIGN KEY (fk_workplace_id) REFERENCES shops(id)
-);
+)ENGINE = InnoDB;
 
 CREATE TABLE ingredients (
     id INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     label VARCHAR(50),
     raw_price DECIMAL,
     net_price DECIMAL
-);
+)ENGINE = InnoDB;
 
 CREATE TABLE pizzas (
     id INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
@@ -57,15 +57,16 @@ CREATE TABLE pizzas (
     raw_price DECIMAL,
     net_price DECIMAL,
     vegan BOOLEAN
-);
+)ENGINE = InnoDB;
 
 CREATE TABLE compositions (
-    fk_pizza_id INTEGER UNSIGNED PRIMARY KEY,
-    fk_ingredient_id INTEGER UNSIGNED PRIMARY KEY,
+    fk_pizza_id INTEGER UNSIGNED,
+    fk_ingredient_id INTEGER UNSIGNED,
     quantity INTEGER,
-    FOREIGN KEY (pizza_id) REFERENCES pizzas(id),
-    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id)
-);
+    FOREIGN KEY (fk_pizza_id) REFERENCES pizzas(id),
+    FOREIGN KEY (fk_ingredient_id) REFERENCES ingredients(id),
+    PRIMARY KEY (fk_ingredient_id, fk_pizza_id)
+)ENGINE = InnoDB;
 
 CREATE TABLE drinkings (
     id INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
@@ -73,68 +74,73 @@ CREATE TABLE drinkings (
     raw_price DECIMAL,
     net_price DECIMAL,
     alcooholic BOOLEAN
-);
+)ENGINE = InnoDB;
 
 CREATE TABLE ingredientStocks (
-    shop_id INTEGER UNSIGNED PRIMARY KEY,
-    ingredient_id INTEGER UNSIGNED PRIMARY KEY,
+    fk_shop_id INTEGER UNSIGNED,
+    fk_ingredient_id INTEGER UNSIGNED,
     quantity INTEGER,
-    FOREIGN KEY (shop_id) REFERENCES shops(id),
-    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id)
-);
+    FOREIGN KEY (fk_shop_id) REFERENCES shops(id),
+    FOREIGN KEY (fk_ingredient_id) REFERENCES ingredients(id),
+    PRIMARY KEY (fk_ingredient_id, fk_shop_id)
+)ENGINE = InnoDB;
 
 CREATE TABLE drinkingsStocks (
-    shop_id INTEGER UNSIGNED PRIMARY KEY,
-    drinkings_id INTEGER UNSIGNED PRIMARY KEY,
+    fk_shop_id INTEGER UNSIGNED,
+    fk_drinkings_id INTEGER UNSIGNED,
     quantity INTEGER,
-    FOREIGN KEY (shop_id) REFERENCES shops(id),
-    FOREIGN KEY (drinkings_id) REFERENCES drinkings(id)
-);
-
-CREATE TABLE drinkingLines (
-    cmd_id INTEGER UNSIGNED PRIMARY KEY,
-    item_id INTEGER UNSIGNED PRIMARY KEY,
-    quantity TINYINT UNSIGNED,
-    total_price DECIMAL,
-    FOREIGN KEY (cmd_id) REFERENCES commands(id),
-    FOREIGN KEY (item_id) REFERENCES drinkings(id)
-);
-
-CREATE TABLE pizzaLines (
-    cmd_id INTEGER UNSIGNED PRIMARY KEY,
-    item_id INTEGER UNSIGNED PRIMARY KEY,
-    quantity TINYINT UNSIGNED,
-    total_price DECIMAL,
-    FOREIGN KEY (cmd_id) REFERENCES commands(id),
-    FOREIGN KEY (item_id) REFERENCES pizzas(id)
-);
+    FOREIGN KEY (fk_shop_id) REFERENCES shops(id),
+    FOREIGN KEY (fk_drinkings_id) REFERENCES drinkings(id),
+    PRIMARY KEY (fk_drinkings_id, fk_shop_id)
+)ENGINE = InnoDB;
 
 CREATE TABLE commands (
     id INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    client_id INTEGER UNSIGNED,
+    fk_client_id INTEGER UNSIGNED,
     raw_price DECIMAL,
     net_price DECIMAL,
-    date_cmd DATETIME
-    FOREIGN KEY (client_id) REFERENCES customers(id)
-);
+    date_cmd DATETIME,
+    FOREIGN KEY (fk_client_id) REFERENCES customers(id)
+)ENGINE = InnoDB;
+
+CREATE TABLE drinkingLines (
+    fk_cmd_id INTEGER UNSIGNED,
+    fk_item_id INTEGER UNSIGNED,
+    quantity TINYINT UNSIGNED,
+    total_price DECIMAL,
+    FOREIGN KEY (fk_cmd_id) REFERENCES commands(id),
+    FOREIGN KEY (fk_item_id) REFERENCES drinkings(id),
+    PRIMARY KEY (fk_item_id, fk_cmd_id)
+)ENGINE = InnoDB;
+
+CREATE TABLE pizzaLines (
+    fk_cmd_id INTEGER UNSIGNED,
+    fk_item_id INTEGER UNSIGNED,
+    quantity TINYINT UNSIGNED,
+    total_price DECIMAL,
+    FOREIGN KEY (fk_cmd_id) REFERENCES commands(id),
+    FOREIGN KEY (fk_item_id) REFERENCES pizzas(id),
+    PRIMARY KEY (fk_item_id, fk_cmd_id)
+)ENGINE = InnoDB;
 
 CREATE TABLE bills (
     id INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    fk_order_id INTEGER NOT NULL,
-    payment_method ENUM('test','truc'),
+    fk_order_id INTEGER UNSIGNED NOT NULL,
+    payment_method ENUM('CB','Espèces', 'Chèque', 'Paiement en ligne'),
     FOREIGN KEY (fk_order_id) REFERENCES commands(id)
-)
+)ENGINE = InnoDB;
 
 CREATE TABLE expeditions (
     id INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    client_id INTEGER UNSIGNED,
-    bill_id INTEGER UNSIGNED,
-    deliverer_id INTEGER UNSIGNED,
+    fk_client_id INTEGER UNSIGNED,
+    fk_bill_id INTEGER UNSIGNED,
+    fk_deliverer_id INTEGER UNSIGNED,
     paid_status BOOLEAN,
     order_date DATETIME,
     delivery_date DATETIME,
-    delivery_mehod ENUM,
-    FOREIGN KEY (client_id) REFERENCES customers(id),
-    FOREIGN KEY (bill_id) REFERENCES bills(id),
-    FOREIGN KEY (deliverer_id) REFERENCES employees(id)
-);
+    delivery_mehod ENUM('Livraison','A Emporter'),
+    FOREIGN KEY (fk_client_id) REFERENCES customers(id),
+    FOREIGN KEY (fk_bill_id) REFERENCES bills(id),
+    FOREIGN KEY (fk_deliverer_id) REFERENCES employees(id)
+)ENGINE = InnoDB;
+
