@@ -7,7 +7,7 @@ CREATE TABLE addresses (
     zip_code VARCHAR(5) NOT NULL,
     street_label VARCHAR(100) NOT NULL,
     street_number VARCHAR(4) NOT NULL,
-    complement VARCHAR(60) NOT NULL,
+    complement VARCHAR(60) NULL,
     phone_number VARCHAR(10)
 )ENGINE = InnoDB;
 
