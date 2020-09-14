@@ -47,16 +47,16 @@ CREATE TABLE employees (
 CREATE TABLE ingredients (
     id INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     label VARCHAR(50),
-    raw_price DECIMAL,
-    net_price DECIMAL
+    raw_price DECIMAL (6,2),
+    net_price DECIMAL (6,2)
 )ENGINE = InnoDB;
 
 CREATE TABLE pizzas (
     id INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     label VARCHAR(30),
-    raw_price DECIMAL,
-    net_price DECIMAL,
-    vegan BOOLEAN
+    raw_price DECIMAL (6,2),
+    net_price DECIMAL (6,2),
+    vegan BIT
 )ENGINE = InnoDB;
 
 CREATE TABLE compositions (
@@ -71,9 +71,9 @@ CREATE TABLE compositions (
 CREATE TABLE drinkings (
     id INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     label VARCHAR(50),
-    raw_price DECIMAL,
-    net_price DECIMAL,
-    alcooholic BOOLEAN
+    raw_price DECIMAL (6,2),
+    net_price DECIMAL (6,2),
+    alcooholic BIT
 )ENGINE = InnoDB;
 
 CREATE TABLE ingredientStocks (
@@ -97,8 +97,8 @@ CREATE TABLE drinkingsStocks (
 CREATE TABLE commands (
     id INTEGER UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     fk_client_id INTEGER UNSIGNED,
-    raw_price DECIMAL,
-    net_price DECIMAL,
+    raw_price DECIMAL (6,2),
+    net_price DECIMAL (6,2),
     date_cmd DATETIME,
     FOREIGN KEY (fk_client_id) REFERENCES customers(id)
 )ENGINE = InnoDB;
@@ -107,7 +107,7 @@ CREATE TABLE drinkingLines (
     fk_cmd_id INTEGER UNSIGNED,
     fk_item_id INTEGER UNSIGNED,
     quantity TINYINT UNSIGNED,
-    total_price DECIMAL,
+    total_price DECIMAL (6,2),
     FOREIGN KEY (fk_cmd_id) REFERENCES commands(id),
     FOREIGN KEY (fk_item_id) REFERENCES drinkings(id),
     PRIMARY KEY (fk_item_id, fk_cmd_id)
@@ -117,7 +117,7 @@ CREATE TABLE pizzaLines (
     fk_cmd_id INTEGER UNSIGNED,
     fk_item_id INTEGER UNSIGNED,
     quantity TINYINT UNSIGNED,
-    total_price DECIMAL,
+    total_price DECIMAL (6,2),
     FOREIGN KEY (fk_cmd_id) REFERENCES commands(id),
     FOREIGN KEY (fk_item_id) REFERENCES pizzas(id),
     PRIMARY KEY (fk_item_id, fk_cmd_id)
@@ -135,7 +135,7 @@ CREATE TABLE expeditions (
     fk_client_id INTEGER UNSIGNED,
     fk_bill_id INTEGER UNSIGNED,
     fk_deliverer_id INTEGER UNSIGNED,
-    paid_status BOOLEAN,
+    paid_status BIT,
     order_date DATETIME,
     delivery_date DATETIME,
     delivery_mehod ENUM('Livraison','A Emporter'),
